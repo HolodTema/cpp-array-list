@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <stdexcept>
+#include "ArrayList.hpp"
 
 template <class T>
 class ArrayList {
@@ -97,7 +98,7 @@ public:
 		quickSort(comparator, 0, size_ -1);
 	}
 
-	T get(const size_t& index) const {
+	T& get(const size_t& index) const {
 		if (index >= size_) {
 			throw std::out_of_range("Error: ArrayList index is out of range.");
 		}
@@ -133,6 +134,7 @@ public:
 
 	template <class T1>
 	friend std::ostream& operator<<(std::ostream& os, const ArrayList<T1>& list);
+
 private:
 	size_t capacity_;
 	size_t size_;
