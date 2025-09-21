@@ -2,12 +2,13 @@
 #define ARRAY_LIST_HPP
 
 #include <functional>
+#include <iostream>
 #include <stdexcept>
 
 template <class T>
 class ArrayList {
 public:
-	static constexpr size_t START_CAPACITY = 20;
+	static constexpr size_t START_CAPACITY = 2;
 	static constexpr float CAPACITY_INCREASE_COEFFICIENT = 1.5;
 
 	ArrayList():
@@ -34,7 +35,7 @@ public:
 		}
 	}
 
-	ArrayList(const ArrayList&& other):
+	ArrayList(ArrayList&& other):
 		capacity_(other.capacity_),
 		size_(other.size_),
 		array_(other.array_)
@@ -61,14 +62,14 @@ public:
 		if (size_ == capacity_) {
 			expandArray();
 		}
-		for (int i = index; i < size_; ++i) {
-			array_[i+1] = array_[i];
+		for (size_t i = size_; i > index; --i) {
+			array_[i] = array_[i-1];
 		}
 		array_[index] = element;
 		++size_;
 	}
 
-	void replace(const size_t& index, const T& element) {
+	void replace(const T& element, const size_t& index) {
 		if (index >= size_) {
 			throw std::out_of_range("Error: ArrayList index is out of range.");
 		}
@@ -79,7 +80,7 @@ public:
 		if (index >= size_) {
 			throw std::out_of_range("Error: ArrayList index is out of range.");
 		}
-		for (int i = index+1; i < size_; ++i) {
+		for (size_t i = index+1; i < size_; ++i) {
 			array_[i-1] = array_[i];
 		}
 		--size_;
@@ -103,6 +104,14 @@ public:
 		return array_[index];
 	}
 
+	size_t size() const {
+		return size_;
+	}
+
+	size_t capacity() const {
+		return capacity_;
+	}
+
 	ArrayList& operator=(const ArrayList& other) {
 		if (this != &other) {
 			ArrayList copy(other);
@@ -121,6 +130,8 @@ public:
 		return *this;
 	}
 
+	template <class T1>
+	friend std::ostream& operator<<(std::ostream& os, const ArrayList<T1>& list);
 private:
 	size_t capacity_;
 	size_t size_;
@@ -133,12 +144,14 @@ private:
 	}
 
 	void expandArray() {
-		T* arrayNew = new T[static_cast<size_t>(capacity_*CAPACITY_INCREASE_COEFFICIENT)];
+		capacity_ = static_cast<size_t>(CAPACITY_INCREASE_COEFFICIENT*capacity_);
+		T* arrayNew = new T[capacity_];
 		for (int i = 0; i < size_; ++i) {
 			arrayNew[i] = array_[i];
 		}
 		delete[] array_;
 		array_ = arrayNew;
+
 	}
 
 	int partition(const std::function<int(const T&, const T&)>& comparator, const int& low, const int& high) {
@@ -159,10 +172,23 @@ private:
 	void quickSort(const std::function<int(const T&, const T&)>& comparator, int low, int high) {
 		if (low < high) {
 			int partitionIndex = partition(comparator, low, high);
-			quickSort(low, partitionIndex - 1);
-			quickSort(partitionIndex + 1, high);
+			quickSort(comparator, low, partitionIndex - 1);
+			quickSort(comparator, partitionIndex + 1, high);
 		}
 	}
 };
+
+template <class T1>
+std::ostream& operator<<(std::ostream& os, const ArrayList<T1>& list) {
+	std::ostream::sentry sentry(os);
+	if (!sentry) {
+		return os;
+	}
+
+	for (int i = 0; i < list.size(); ++i) {
+		os << list.get(i) << "\n";
+	}
+	return os;
+}
 
 #endif
