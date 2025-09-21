@@ -122,6 +122,7 @@ public:
 
 	ArrayList& operator=(ArrayList&& other) noexcept {
 		if (this != &other) {
+			delete[] array_;
 			capacity_ = other.capacity_;
 			size_ = other.size_;
 			array_ = other.array_;

@@ -290,7 +290,7 @@ int main() {
 	testCopyOperator();
 	testCapacityConstructor();
 	testMoveConstructor();
-	testMoveOperator();
+	testMoveOperator(); //leak
 	testSort();
 	return 0;
 }
