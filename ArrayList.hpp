@@ -18,7 +18,7 @@ public:
 		array_ = new T[capacity_];
 	}
 
-	ArrayList(const size_t& capacity):
+	explicit ArrayList(const size_t& capacity):
 		capacity_(capacity),
 		size_(0)
 	{
